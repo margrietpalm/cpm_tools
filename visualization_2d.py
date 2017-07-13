@@ -46,6 +46,7 @@ def animate_cpm_sim_mpl(tau_list,colors,fn=None,show=False,dpi=100,scale=1,fps=5
         anim.save(fn, fps=fps, extra_args=['-vcodec', 'libx264'])
     return anim
 
+
 def draw_cpm_grid_mpl(tau,colors,ax=None,fn=None,dpi=100,scale=1):
     """ Draw cpm grid using matplotlib.
 
@@ -80,6 +81,53 @@ def draw_cpm_grid_mpl(tau,colors,ax=None,fn=None,dpi=100,scale=1):
     if fn is not None:
         plt.savefig(fn,dpi=dpi)
         plt.close()
+
+
+def get_2d_projection(sigma,tau,projection):
+    """ Draw 2D projection of a 3D cpm simulation
+
+    :param sigma: 3D array with cell ids
+    :param tau: 3D array with cell types
+    :param projection: string with projection plane (x, y, or z) and direction ('+' = top and '-' = bottom)
+    """
+    top = -1
+    if '-' in projection:
+        top = 0
+    if 'x' in projection:
+        sigma_2d = np.array([[sigma[:, y, z][sigma[:, y, z] > 0][top] if np.any(sigma[:, y, z] > 0) else 0
+                              for z in range(sigma.shape[2])] for z in range(sigma.shape[1])])
+    elif 'y' in projection:
+        sigma_2d = np.array([[sigma[x, :, z][sigma[x, :, z] > 0][top] if np.any(sigma[x, :, z] > 0) else 0
+                              for z in range(sigma.shape[2])] for x in range(sigma.shape[0])])
+    elif 'z' in projection:
+        sigma_2d = np.array([[sigma[x, y, :][sigma[x, y, :] > 0][top] if np.any(sigma[x, y, :] > 0) else 0
+                          for y in range(sigma.shape[1])] for x in range(sigma.shape[0])])
+    else:
+        print('Unrecognized projection {}'.format(projection))
+        return
+    # map tau
+    tau_2d = np.zeros_like(sigma_2d)
+    for s in np.unique(sigma_2d):
+        px, py, pz = np.array(np.where(sigma == s))[:, 0]
+        tau_2d[np.where(sigma_2d == s)] = tau[px, py, pz]
+    return sigma_2d,tau_2d
+
+
+def draw_2d_projection(sigma,tau,colormap,fn,projection='+z',scale=1,border_color=None,draw_border=True):
+    """ Draw 2D projection of a 3D cpm simulation
+
+    :param sigma: 3D array with cell ids
+    :param tau: 3D array with cell types
+    :param colormap: dictionary with tau as keys and colors (rgb tuples) as values
+    :param fn: filename used for saving
+    :param projection: string with projection plane (x, y, or z) and direction ('+' = top and '-' = bottom)
+    :param scale: image scaling
+    :param border_color: color of the cell borders
+    :param draw_border: draw cell borders
+    """
+    sigma_2d,tau_2d = get_2d_projection(sigma,tau,projection)
+    draw_cpm_grid(sigma_2d,tau_2d,colormap,fn,scale,border_color,draw_border)
+
 
 def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=True):
     """ Draw cpm grid
@@ -149,13 +197,13 @@ def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=Tr
         bim = []
 
     # combine the components created above into one image
-    imnew = colormap[0]*np.ones((scale*nx,scale*ny,3))
+    imnew = colormap[0]*np.ones((scale*nx,scale*ny,len(colormap[0])))
     if np.sum(sigma) > 0:
         for tp in np.unique(types):
             if tp == 0:
                 continue
             imnew[types==tp] = colormap[tp]
-            imnew[bim] = border_color
+        imnew[bim] = border_color
 
     # save final image
     final_im = Image.fromarray(np.uint8(imnew))
@@ -242,3 +290,5 @@ def _add_color_bar_horizontal(im,colors,w,h,labels=None,fontcolor=(0,0,0),bgcolo
             draw.text((x,y),str(label),fill=fontcolor,font=font)
     im.paste(newim,((im.size[0]-nx)-nx/2,(im.size[1]-ny)/2))
     return im
+
+
