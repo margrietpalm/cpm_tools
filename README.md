@@ -4,3 +4,4 @@ Set of tools for analyzing CPM simulations. All visualization and analysis funct
 
 Available functionality:
 - Drawing 2D simulations
+- Initializing 2D simulations
