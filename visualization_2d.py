@@ -128,26 +128,41 @@ def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=Tr
     final_im.save(fn)
 
 
-def add_legend(imname, colormap, wbox=10, hbox=10, fontcolor=(0, 0, 0),
-               fontpath=__FONTPATH__,fontsize=14, outname=None):
+def add_legend(imname, colormap, wbox=10, hbox=10, fontcolor=(0, 0, 0),bgcolor=(255,255,255),
+               fontpath=__FONTPATH__,fontsize=14, outname=None, overlay=False):
     font = ImageFont.truetype(fontpath, fontsize)
-    # get label height
-    temp = Image.new('RGB', (10, 10))
-    draw = ImageDraw.Draw(temp)
-    (tw,th) = draw.textsize(str(list(colormap.keys())[0]), font=font)
-    # add labels
-    im = Image.open(imname)
-    draw = ImageDraw.Draw(im)
-    (w,h) = im.size
     x0 = 10
     y0 = 10
     dh = hbox+5
+    # open image to which the legend is added
+    im = Image.open(imname)
+    # compute size of the legend
+    (w,h) = im.size
+    temp = Image.new('RGB', (10, 10))
+    draw = ImageDraw.Draw(temp)
+    labelsizes = np.array([draw.textsize(str(key), font=font) for key in colormap.keys()])
+    th = labelsizes[0, 1]
+    (tw, th) = draw.textsize(str(list(colormap.keys())[0]), font=font)
+    h = y0 + len(colormap) * dh
+    w = x0 + max(labelsizes[:,0])+wbox+5
+    # create image for legend and draw legend
+    legend = Image.new('RGB',(w,h),bgcolor)
+    draw = ImageDraw.Draw(legend)
     for i,(name,color) in enumerate(colormap.items()):
         draw.rectangle([(x0,y0+i*dh),(x0+wbox,y0+i*dh+hbox)],fill=color,outline=(0,0,0))
         draw.text((x0+wbox+5,y0+i*dh+.5*hbox-.5*th),str(name),fill=fontcolor,font=font)
+
+    # combine existing image and legend
     if outname is None:
         outname = imname
-    im.save(outname)
+    if overlay:
+        im.paste(legend,(0,0))
+        im.save(outname)
+    else:
+        newim = Image.new('RGB',(im.size[0]+legend.size[0],im.size[1]),color=bgcolor)
+        newim.paste(legend,(0,0))
+        newim.paste(im,(legend.size[0],0))
+        newim.save(outname)
 
 
 def add_color_bar(imname, colors, labels, w, h, fontcolor=(0, 0, 0), bgcolor=(255, 255, 255), fontpath=__FONTPATH__,
