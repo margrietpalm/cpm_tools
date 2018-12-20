@@ -12,6 +12,8 @@ Contents:
    :maxdepth: 2
 
    visualization_2d
+   initialization
+
 
 Indices and tables
 ==================

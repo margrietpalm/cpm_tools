@@ -1,8 +1,9 @@
+import copy
 import numpy as np
 from numba import jit
+import imageio
 
 
-@jit(nopython=True)
 def grow_cells_DLA(grid, volume):
     """
     Grow cells using diffusion limited aggregation (DLA). Growth continues until
@@ -23,17 +24,37 @@ def grow_cells_DLA(grid, volume):
     pix = [[x, y] for x in range(w) for y in range(h)]
     # while np.any(np.bincount(grid.flatten())[1:] < volume):
     while np.sum(grid > 0) < volume * n:
-        r = np.random.randint(0, 7, w * h)
-        for i, (x, y) in enumerate(pix):
-            if grid[x, y] > 0:
-                continue
-            nb_x = x + nx[r[i]]
-            nb_y = y + ny[r[i]]
-            if (nb_x < 0) or (nb_y < 0) or (nb_x >= w) or (nb_y >= h):
-                continue
-            if grid[nb_x, nb_y] > 0 and np.sum(grid == grid[nb_x, nb_y]) < volume:
-                grid[x, y] = grid[nb_x, nb_y]
+        grid = _DLA_step(copy.deepcopy(grid),volume,w,h)
+    #     r = np.random.randint(0, 7, w * h)
+    #     for i, (x, y) in enumerate(pix):
+    #         if grid[x, y] > 0:
+    #             continue
+    #         nb_x = x + nx[r[i]]
+    #         nb_y = y + ny[r[i]]
+    #         if (nb_x < 0) or (nb_y < 0) or (nb_x >= w) or (nb_y >= h):
+    #             continue
+    #         if grid[nb_x, nb_y] > 0 and np.sum(grid == grid[nb_x, nb_y]) < volume:
+    #             grid[x, y] = grid[nb_x, nb_y]
     return grid
+
+
+@jit(nopython=True)
+def _DLA_step(grid,volume,w,h):
+    nx = [-1, -1, 0, 1, 1, 1, 0, -1]
+    ny = [0, 1, 1, 1, 0, -1, -1, -1]
+    pix = [[x, y] for x in range(w) for y in range(h)]
+    r = np.random.randint(0, 7, w * h)
+    for i, (x, y) in enumerate(pix):
+        if grid[x, y] > 0:
+            continue
+        nb_x = x + nx[r[i]]
+        nb_y = y + ny[r[i]]
+        if (nb_x < 0) or (nb_y < 0) or (nb_x >= w) or (nb_y >= h):
+            continue
+        if grid[nb_x, nb_y] > 0 and np.sum(grid == grid[nb_x, nb_y]) < volume:
+            grid[x, y] = grid[nb_x, nb_y]
+    return grid
+
 
 def grow_cells_round(grid, r):
     """
@@ -51,15 +72,20 @@ def grow_cells_round(grid, r):
     w = grid.shape[0]
     h = grid.shape[1]
     for idx, (x, y) in enumerate(pix, 1):
-        for i in range(-r, r):
-            for j in range(-r, r):
-                if (x + i > 0) and (y + j > 0) and (x + i < w) and (y + j < h):
-                    if (i ** 2 + j ** 2) < r ** 2:
-                        grid[x + i, y + j] = idx
+        grid = _grow_to_circle(grid,idx,x,y,r,w,h)
     return grid
 
 
-@jit(nopython=True)  # Set "nopython" mode for best performance, equivalent to @njit
+@jit(nopython=True)
+def _grow_to_circle(grid,idx,x,y,r,w,h):
+    for i in range(-r, r):
+        for j in range(-r, r):
+            if (x + i > 0) and (y + j > 0) and (x + i < w) and (y + j < h):
+                if (i ** 2 + j ** 2) < r ** 2:
+                    grid[x + i, y + j] = idx
+    return grid
+
+
 def seed_cells(w, h, n, pad=10, dist=0, maxit=1000):
     """
     Randomly place single pixels on the CPM grid. When the minimum distance is zero, cells are placed randomly
@@ -84,23 +110,21 @@ def seed_cells(w, h, n, pad=10, dist=0, maxit=1000):
         return _seed_cells_naive(w, h, n, pad)
 
 
-@jit(nopython=True)  # Set "nopython" mode for best performance, equivalent to @njit
 def _seed_cells_naive(w, h, n, pad=10):
     grid = np.zeros((w, h))
-    if w*h < n:
-        pix = [(i,j) for i in range(w) for j in range(h)]
-        for idx,(i,j) in enumerate(pix,1):
-            grid[i,j] = idx
+    if w * h < n:
+        pix = [(i, j) for i in range(w) for j in range(h)]
+        for idx, (i, j) in enumerate(pix, 1):
+            grid[i, j] = idx
     else:
-        while np.sum(grid>0) < n:
+        while np.sum(grid > 0) < n:
             x0 = np.random.randint(pad, w - pad)
             y0 = np.random.randint(pad, h - pad)
-            if grid[x0,y0] == 0:
-                grid[x0,y0] = np.sum(grid>0)+1
+            if grid[x0, y0] == 0:
+                grid[x0, y0] = np.sum(grid > 0) + 1
     return grid
 
 
-@jit(nopython=True)  # Set "nopython" mode for best performance, equivalent to @njit
 def _seed_cells_complicated(w, h, n, pad=10, dist=2, maxit=1000):
     pix = []
     it = 0
@@ -123,5 +147,17 @@ def _seed_cells_complicated(w, h, n, pad=10, dist=2, maxit=1000):
     return grid
 
 
-def write_to_pif(grid):
-    #TODO
+def write_to_tiff(grid, fn):
+    """
+    Save grid to tiff.
+
+    Args:
+        grid: CPM grid
+        fn: filename
+
+    """
+    if grid.max() < 256:
+        imageio.imwrite(fn, grid.astype(np.uint8), format='tiff')
+    else:
+        imageio.imwrite(fn, grid.astype(np.uint16), format='tiff')
+
