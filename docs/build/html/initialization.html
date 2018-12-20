@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Initialization &mdash; CPM Tools 0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="CPM Tools 0 documentation" href="index.html"/>
+        <link rel="prev" title="2D visualization" href="visualization_2d.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CPM Tools
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="visualization_2d.html">2D visualization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Initialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#round-cells">Round cells</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#realistic-cells">Realistic cells</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-cpm_tools.initialization">Reference</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CPM Tools</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Initialization</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/initialization.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="initialization">
+<h1>Initialization<a class="headerlink" href="#initialization" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="round-cells">
+<h3>Round cells<a class="headerlink" href="#round-cells" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cpm_tools</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">ncells</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1"># seed pixels</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">seed_cells</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">ncells</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">,</span><span class="n">dist</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">r</span><span class="p">)</span>
+
+<span class="c1"># add pixels to each seed to make circles</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">grow_cells_round</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="n">r</span><span class="p">)</span>
+
+<span class="c1"># save to tiff</span>
+<span class="n">write_to_tiff</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="s1">&#39;../images/cells_round.tiff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="realistic-cells">
+<h3>Realistic cells<a class="headerlink" href="#realistic-cells" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">cpm_tools</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">h</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">ncells</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="n">volume</span> <span class="o">=</span> <span class="mi">80</span>
+
+<span class="c1"># seed pixels</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">seed_cells</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">,</span><span class="n">ncells</span><span class="p">,</span><span class="n">pad</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+<span class="c1"># add pixels to each seed to make circles</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">grow_cells_DLA</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="n">volume</span><span class="p">)</span>
+
+<span class="c1"># save to tiff</span>
+<span class="n">write_to_tiff</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span><span class="s1">&#39;../images/cells_DLA.tiff&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="module-cpm_tools.initialization">
+<span id="reference"></span><h2>Reference<a class="headerlink" href="#module-cpm_tools.initialization" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="cpm_tools.initialization.grow_cells_DLA">
+<code class="descclassname">cpm_tools.initialization.</code><code class="descname">grow_cells_DLA</code><span class="sig-paren">(</span><em>grid</em>, <em>volume</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cpm_tools/initialization.html#grow_cells_DLA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cpm_tools.initialization.grow_cells_DLA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grow cells using diffusion limited aggregation (DLA). Growth continues until
+all cells have the desired volume and cells cannot grow beyond that volume.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>w</strong> – CPM grid</li>
+<li><strong>volume</strong> – cell volume</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: CPM grid</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cpm_tools.initialization.grow_cells_round">
+<code class="descclassname">cpm_tools.initialization.</code><code class="descname">grow_cells_round</code><span class="sig-paren">(</span><em>grid</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cpm_tools/initialization.html#grow_cells_round"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cpm_tools.initialization.grow_cells_round" title="Permalink to this definition">¶</a></dt>
+<dd><p>Grow seeded cells into circles</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>grid</strong> – CPM grid with seeded cells</li>
+<li><strong>r</strong> – cell radius</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: Numpy array representing sigma</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cpm_tools.initialization.seed_cells">
+<code class="descclassname">cpm_tools.initialization.</code><code class="descname">seed_cells</code><span class="sig-paren">(</span><em>w</em>, <em>h</em>, <em>n</em>, <em>pad=10</em>, <em>dist=0</em>, <em>maxit=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cpm_tools/initialization.html#seed_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cpm_tools.initialization.seed_cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly place single pixels on the CPM grid. When the minimum distance is zero, cells are placed randomly
+without considering the position of other cells. When the minimum distance is larger than zero,
+the algorithm attempts to position the desired number of cells considering the minimum distance. To prevent
+an infinite run, the algorithm is stopped when the maximum number of iterations is reached.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>w</strong> – grid width</li>
+<li><strong>h</strong> – grid height</li>
+<li><strong>n</strong> – number of cells</li>
+<li><strong>pad</strong> – padding between cells and border</li>
+<li><strong>dist</strong> – minimum distance between cells</li>
+<li><strong>maxit</strong> – maximum number of iterations per cells</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Returns: CPM grid</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cpm_tools.initialization.write_to_tiff">
+<code class="descclassname">cpm_tools.initialization.</code><code class="descname">write_to_tiff</code><span class="sig-paren">(</span><em>grid</em>, <em>fn</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cpm_tools/initialization.html#write_to_tiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cpm_tools.initialization.write_to_tiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save grid to tiff.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>grid</strong> – CPM grid</li>
+<li><strong>fn</strong> – filename</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="visualization_2d.html" class="btn btn-neutral" title="2D visualization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Margriet Palm.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
