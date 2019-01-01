@@ -128,6 +128,35 @@ def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=Tr
     final_im.save(fn)
 
 
+def add_text(imname,label,position,dist=10,fontcolor=(0, 0, 0),bgcolor=(255,255,255),
+               fontpath=__FONTPATH__,fontsize=14, outname=None):
+    font = ImageFont.truetype(fontpath, fontsize)
+    im = Image.open(imname)
+    (w,h) = im.size
+    temp = Image.new('RGBA',(w,h),bgcolor)
+    draw = ImageDraw.Draw(temp)
+    (tw,th) = draw.textsize(label,font=font)
+    text = Image.new('RGBA',(tw,th),bgcolor)
+    draw = ImageDraw.Draw(text)
+    draw.text((0,0),label,font=font,fill=fontcolor)
+    (x0,y0) = (dist,dist)
+    if position[0] == 1:
+        x0 = w-dist-tw
+    elif position[0] > 0:
+        x0 = w*position[0]-.5*tw-.5*dist
+    if 1-position[1] == 1:
+        y0 = h-dist-th
+    elif position[1] < 1:
+        y0 = h*position[1]-.5*th-.5*dist
+    im.paste(text,(int(x0),int(y0)))
+    im.save(imname)
+    # draw.text((x0,y0),str(label),fill=fontcolor,font=font)
+    # newim = Image.new('RGBA', (im.size[0], im.size[1]), color=bgcolor)
+    # newim.paste(im, (0,0))
+    # newim.paste(text, (0, 0))
+    # newim.save(imname)
+
+
 def add_legend(imname, colormap, wbox=10, hbox=10, fontcolor=(0, 0, 0),bgcolor=(255,255,255),
                fontpath=__FONTPATH__,fontsize=14, outname=None, overlay=False):
     font = ImageFont.truetype(fontpath, fontsize)
