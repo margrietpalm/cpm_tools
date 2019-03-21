@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import copy,os
 
@@ -232,6 +233,7 @@ def _add_color_bar_vertical(im,colors,w,h,labels=None,fontcolor=(0,0,0),bgcolor=
         w = w-1.1*tsize[0]-10
     nx = int(math.ceil(w))
     ny = int(math.ceil(h))
+    print(w,h,nx,ny)
     newim = Image.new('RGB',(nx,ny),bgcolor)
     dh = h/float(len(colors))
     draw = ImageDraw.Draw(newim)
@@ -243,8 +245,9 @@ def _add_color_bar_vertical(im,colors,w,h,labels=None,fontcolor=(0,0,0),bgcolor=
         x = w+0.1*tsize[0]
         for i,label in enumerate(labels):
             y = y0-.5*tsize[1]-h*i/float(len(labels)-1)
+            print(label,x,y,fontcolor)
             draw.text((x,y),str(label),fill=fontcolor,font=font)
-    im.paste(newim,((im.size[0]-nx)-nx/2,(im.size[1]-ny)/2))
+    im.paste(newim,((im.size[0]-nx)-nx//2,(im.size[1]-ny)//2))
     return im
 
 def _add_color_bar_horizontal(im,colors,w,h,labels=None,fontcolor=(0,0,0),bgcolor=(255,255,255),
