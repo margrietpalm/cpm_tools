@@ -98,20 +98,7 @@ def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=Tr
 
     # used mahotas labeled function to retrieve the borders
     if draw_border:
-        sigMin = 0
-        bim = None
-        # Labeled gives each component an integer value between 0 and 255.
-        # Hence, the algorithm fails when there are more than 255 cells.
-        # Therefore, we retrieve the borders per 255 cells.
-        while sigMin < np.max(sigma):
-            imtemp = copy.deepcopy(np.asarray(im))
-            imtemp[np.where(imtemp < sigMin)] = 0
-            imtemp[np.where(imtemp > sigMin+255)] = 0
-            if bim is None:
-                bim = labeled.borders(imtemp)
-            else:
-                bim += labeled.borders(imtemp)
-            sigMin += 255
+        bim = labeled.borders(np.asarray(im))
     else:
         bim = []
 

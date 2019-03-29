@@ -66,16 +66,4 @@ def draw_cpm_grid_mpl(tau,colors,ax=None,fn=None,dpi=100,scale=1):
 
     # setup color map
     cmap = mpl_colors.ListedColormap(colors)
-    bounds=np.array(list(np.unique(tau))+[np.max(tau)+1])
-    norm = mpl_colors.BoundaryNorm(bounds, cmap.N)
 
-    # draw image
-    img = plt.imshow(tau, interpolation='nearest', origin='lower',
-                    cmap=cmap, norm=norm)
-    ax.set_aspect('equal', adjustable='box')
-    plt.axis('off')
-
-    # save image
-    if fn is not None:
-        plt.savefig(fn,dpi=dpi)
-        plt.close()
