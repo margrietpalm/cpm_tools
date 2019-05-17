@@ -25,16 +25,6 @@ def grow_cells_DLA(grid, volume):
     # while np.any(np.bincount(grid.flatten())[1:] < volume):
     while np.sum(grid > 0) < volume * n:
         grid = _DLA_step(copy.deepcopy(grid),volume,w,h)
-    #     r = np.random.randint(0, 7, w * h)
-    #     for i, (x, y) in enumerate(pix):
-    #         if grid[x, y] > 0:
-    #             continue
-    #         nb_x = x + nx[r[i]]
-    #         nb_y = y + ny[r[i]]
-    #         if (nb_x < 0) or (nb_y < 0) or (nb_x >= w) or (nb_y >= h):
-    #             continue
-    #         if grid[nb_x, nb_y] > 0 and np.sum(grid == grid[nb_x, nb_y]) < volume:
-    #             grid[x, y] = grid[nb_x, nb_y]
     return grid
 
 

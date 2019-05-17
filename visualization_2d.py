@@ -103,7 +103,7 @@ def draw_cpm_grid(sigma,tau,colormap,fn,scale=1,border_color=None,draw_border=Tr
         bim = []
 
     # combine the components created above into one image
-    imnew = colormap[0]*np.ones((scale*nx,scale*ny,len(colormap[0])))
+    imnew = colormap[0]*np.ones((int(scale*nx),int(scale*ny),len(colormap[0])))
     if np.sum(sigma) > 0:
         for tp in np.unique(types):
             if tp == 0:
@@ -138,11 +138,6 @@ def add_text(imname,label,position,dist=10,fontcolor=(0, 0, 0),bgcolor=(255,255,
         y0 = h*position[1]-.5*th-.5*dist
     im.paste(text,(int(x0),int(y0)))
     im.save(imname)
-    # draw.text((x0,y0),str(label),fill=fontcolor,font=font)
-    # newim = Image.new('RGBA', (im.size[0], im.size[1]), color=bgcolor)
-    # newim.paste(im, (0,0))
-    # newim.paste(text, (0, 0))
-    # newim.save(imname)
 
 
 def add_legend(imname, colormap, wbox=10, hbox=10, fontcolor=(0, 0, 0),bgcolor=(255,255,255),
