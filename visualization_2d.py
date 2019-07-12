@@ -195,7 +195,6 @@ def add_color_bar(imname, colors, labels, w, h, fontcolor=(0, 0, 0), bgcolor=(25
     else:
         im = _add_color_bar_vertical(im, colors, w, h, labels, fontcolor, bgcolor, fontpath, fontsize, append)
     if outname is None:
-        print('added colorbar and saved to ',imname)
         im.save(imname)
     else:
         im.save(outname)
@@ -245,27 +244,27 @@ def _add_color_bar_horizontal(im, colors, w, h, labels=None, fontcolor=(0, 0, 0)
         temp = Image.new('RGB', (10, 10))
         draw = ImageDraw.Draw(temp)
         tsize = draw.textsize(str(lbig), font=font)
-        h = h - tsize[1]
-        w = w - 1.1 * tsize[0] - 10
-    nx = int(math.ceil(w))
-    ny = int(math.ceil(h))
+        H = h + 1.1*tsize[1]+10
+        W = w + 1.1 * tsize[0] - 10
+    nx = int(math.ceil(W))
+    ny = int(math.ceil(H))
     barim = Image.new('RGB', (nx, ny), bgcolor)
-    dh = h / float(len(colors))
+    dw = w / float(len(colors))
     draw = ImageDraw.Draw(barim)
-    y0 = ny - (ny - h) / 2.
+    x0 = (nx - w) / 2.
     for idx, c in enumerate(colors):
         color = tuple(int(255 * c[i]) for i in [0, 1, 2])
-        draw.rectangle([(0, y0 - idx * dh), (w, y0 - (idx + 1) * dh)], fill=color, outline=color)
+        draw.rectangle([(x0 + idx*dw, 0), (x0 + (idx+1)*dw, h)], fill=color, outline=color)
     if labels is not None:
-        x = w + 0.1 * tsize[0]
+        y = h
         for i, label in enumerate(labels):
-            y = y0 - .5 * tsize[1] - h * i / float(len(labels) - 1)
+            tsize = draw.textsize(str(lbig), font=font)
+            x = x0 + -.5 * tsize[0] + w * i / float(len(labels) - 1)
             draw.text((x, y), str(label), fill=fontcolor, font=font)
     if append:
-        print('create new image')
-        newim = Image.new('RGB', (im.size[0]+nx, im.size[1]), bgcolor)
+        newim = Image.new('RGB', (int(im.size[0]), im.size[1]+barim.size[1]), bgcolor)
         newim.paste(im, (0,0))
-        newim.paste(barim, (im.size[0], (im.size[1] - ny) / 2))
+        newim.paste(barim, (int((im.size[0] - nx) // 2), int(10+im.size[1])))
         return newim
     else:
         im.paste(barim, ((im.size[0] - nx) - nx / 2, (im.size[1] - ny) / 2))
