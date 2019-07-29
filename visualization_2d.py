@@ -137,6 +137,33 @@ def add_text(imname, label, position, dist=10, fontcolor=(0, 0, 0), bgcolor=(255
     im.save(imname)
 
 
+def add_text_outside(imname, label, xpos='center', ypos='bottom', pad=10, fontcolor=(0, 0, 0),
+                    bgcolor=(255, 255, 255), fontpath=__FONTPATH__, fontsize=14, outname=None):
+
+    font = ImageFont.truetype(fontpath, fontsize)
+    im = Image.open(imname)
+    (w, h) = im.size
+    temp = Image.new('RGBA', (w, h), bgcolor)
+    draw = ImageDraw.Draw(temp)
+    (tw, th) = draw.textsize(label, font=font)
+
+    text = Image.new('RGBA', (tw, th), bgcolor)
+    draw = ImageDraw.Draw(text)
+    draw.text((0, 0), label, font=font, fill=fontcolor)
+
+    newim = Image.new('RGB', (im.size[0],im.size[1]+th+2*pad), bgcolor)
+    (x0, y0) = (pad,pad)
+    if ypos == 'bottom':
+        y0 = h+pad
+    if xpos == 'center':
+        x0 = .5*(w-tw-pad)
+    elif xpos == 'right':
+        x0 = w-th-pad
+    newim.paste(im, (0,0))
+    newim.paste(text, (x0,y0))
+    newim.save(imname)
+
+
 def add_legend(imname, colormap, wbox=10, hbox=10, fontcolor=(0, 0, 0), bgcolor=(255, 255, 255),
                fontpath=__FONTPATH__, fontsize=14, outname=None, overlay=False):
     font = ImageFont.truetype(fontpath, fontsize)
