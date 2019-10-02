@@ -1,7 +1,8 @@
 import copy
 import numpy as np
+from numba import jit
 import imageio
-import numba
+
 
 def grow_cells_DLA(grid, volume):
     """
