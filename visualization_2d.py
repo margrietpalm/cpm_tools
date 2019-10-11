@@ -136,6 +136,11 @@ def add_text(imname, label, position, dist=10, fontcolor=(0, 0, 0), bgcolor=(255
     im.paste(text, (int(x0), int(y0)))
     im.save(imname)
 
+def add_box(imname, center, width, height, line_color):
+    im = Image.open(imname)
+    draw = ImageDraw.Draw(im)
+    draw.rectangle([(center[0]-.5*width,center[1]-.5*height),
+                    (center[0]+.5*width,center[1]+.5*height)],fill=None,outline=line_color)
 
 def add_text_outside(imname, label, xpos='center', ypos='bottom', pad=10, fontcolor=(0, 0, 0),
                     bgcolor=(255, 255, 255), fontpath=__FONTPATH__, fontsize=14, outname=None):
